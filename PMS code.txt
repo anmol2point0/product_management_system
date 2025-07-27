@@ -1,0 +1,217 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from tkinter import ttk
+import pandas as pd
+
+products = []
+sales = []
+customers = []
+
+class StockApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Stock Management System")
+        self.root.geometry("800x600")
+        self.root.configure(bg="#333333")  # Dark gray background
+
+        self.create_ribbon_menu()
+
+        # Main content area
+        self.content_frame = tk.Frame(self.root, bg="#333333")
+        self.content_frame.pack(expand=True, fill=tk.BOTH)
+
+    def create_ribbon_menu(self):
+        ribbon_frame = tk.Frame(self.root, bg="#444444")
+        ribbon_frame.pack(side=tk.TOP, fill=tk.X)
+
+        product_button = tk.Button(ribbon_frame, text="Product", command=self.show_product_menu, bg="#007bff", fg="white", font=("Helvetica", 12), width=10)
+        product_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+        customer_button = tk.Button(ribbon_frame, text="Customer", command=self.show_customer_menu, bg="#007bff", fg="white", font=("Helvetica", 12), width=10)
+        customer_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+        sales_button = tk.Button(ribbon_frame, text="Sales", command=self.show_sales_menu, bg="#007bff", fg="white", font=("Helvetica", 12), width=10)
+        sales_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+    def show_product_menu(self):
+        self.clear_content_frame()
+        title = tk.Label(self.content_frame, text="Product Management", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        add_product_button = tk.Button(self.content_frame, text="Add Product", command=self.show_add_product, bg="#007bff", fg="white", font=("Helvetica", 12))
+        add_product_button.pack(pady=10)
+
+        view_product_button = tk.Button(self.content_frame, text="View Products", command=self.show_view_products, bg="#007bff", fg="white", font=("Helvetica", 12))
+        view_product_button.pack(pady=10)
+
+    def show_customer_menu(self):
+        self.clear_content_frame()
+        title = tk.Label(self.content_frame, text="Customer Management", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        add_customer_button = tk.Button(self.content_frame, text="Add Customer", command=self.show_add_customer, bg="#007bff", fg="white", font=("Helvetica", 12))
+        add_customer_button.pack(pady=10)
+
+        view_customer_button = tk.Button(self.content_frame, text="View Customers", command=self.show_view_customers, bg="#007bff", fg="white", font=("Helvetica", 12))
+        view_customer_button.pack(pady=10)
+
+    def show_sales_menu(self):
+        self.clear_content_frame()
+        title = tk.Label(self.content_frame, text="Sales Management", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        add_sales_button = tk.Button(self.content_frame, text="Add Sales", command=self.show_add_sales, bg="#007bff", fg="white", font=("Helvetica", 12))
+        add_sales_button.pack(pady=10)
+
+        view_sales_button = tk.Button(self.content_frame, text="View Sales", command=self.show_view_sales, bg="#007bff", fg="white", font=("Helvetica", 12))
+        view_sales_button.pack(pady=10)
+
+    def show_add_product(self):
+        self.clear_content_frame()
+
+        title = tk.Label(self.content_frame, text="Add Product", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        product_name_entry = self.create_labeled_entry("Product Name")
+        quantity_entry = self.create_labeled_entry("Quantity")
+        price_entry = self.create_labeled_entry("Price")
+
+        def add_product():
+            product = {
+                'name': product_name_entry.get(),
+                'quantity': quantity_entry.get(),
+                'price': price_entry.get()
+            }
+            products.append(product)
+            messagebox.showinfo("Success", "Product is added")
+
+        tk.Button(self.content_frame, text="Add Product", command=add_product, bg="#007bff", fg="white", font=("Helvetica", 12)).pack(pady=10)
+
+    def show_add_customer(self):
+        self.clear_content_frame()
+
+        title = tk.Label(self.content_frame, text="Add Customer", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        name_entry = self.create_labeled_entry("Customer Name")
+        customer_id_entry = self.create_labeled_entry("Customer ID")
+
+        def add_customer():
+            customer = {
+                'name': name_entry.get(),
+                'id': customer_id_entry.get()
+            }
+            customers.append(customer)
+            messagebox.showinfo("Success", "Customer is added")
+
+        tk.Button(self.content_frame, text="Add Customer", command=add_customer, bg="#007bff", fg="white", font=("Helvetica", 12)).pack(pady=10)
+
+    def show_view_customers(self):
+        self.clear_content_frame()
+
+        title = tk.Label(self.content_frame, text="View Customers", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        columns = ('name', 'id')
+        tree = ttk.Treeview(self.content_frame, columns=columns, show='headings', height=10)
+        tree.heading('name', text='Customer Name')
+        tree.heading('id', text='Customer ID')
+
+        for customer in customers:
+            tree.insert('', tk.END, values=(customer['name'], customer['id']))
+
+        tree.pack(expand=True, fill=tk.BOTH, padx=20, pady=10)
+
+    def show_view_products(self):
+        self.clear_content_frame()
+
+        title = tk.Label(self.content_frame, text="View Products", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        columns = ('product_name', 'quantity', 'price')
+        tree = ttk.Treeview(self.content_frame, columns=columns, show='headings', height=10)
+        tree.heading('product_name', text='Product Name')
+        tree.heading('quantity', text='Quantity')
+        tree.heading('price', text='Price')
+
+        for product in products:
+            tree.insert('', tk.END, values=(product['name'], product['quantity'], product['price']))
+
+        tree.pack(expand=True, fill=tk.BOTH, padx=20, pady=10)
+
+        tk.Button(self.content_frame, text="Download Products", command=lambda: self.download_data('products'), bg="#007bff", fg="white", font=("Helvetica", 12)).pack(pady=10)
+
+    def show_add_sales(self):
+        self.clear_content_frame()
+
+        title = tk.Label(self.content_frame, text="Add Sales", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        product_name_entry = self.create_labeled_entry("Product Name")
+        quantity_entry = self.create_labeled_entry("Quantity")
+        price_entry = self.create_labeled_entry("Price")
+        customer_name_entry = self.create_labeled_entry("Customer Name")
+
+        def add_sales():
+            sale = {
+                'product_name': product_name_entry.get(),
+                'quantity': quantity_entry.get(),
+                'price': price_entry.get(),
+                'customer_name': customer_name_entry.get()
+            }
+            sales.append(sale)
+            messagebox.showinfo("Success", "Sale is added")
+
+        tk.Button(self.content_frame, text="Add Sales", command=add_sales, bg="#007bff", fg="white", font=("Helvetica", 12)).pack(pady=10)
+
+    def show_view_sales(self):
+        self.clear_content_frame()
+
+        title = tk.Label(self.content_frame, text="View Sales", font=("Helvetica", 18, "bold"), bg="#333333", fg="#007bff")
+        title.pack(pady=20)
+
+        columns = ('product_name', 'quantity', 'price', 'customer_name')
+        tree = ttk.Treeview(self.content_frame, columns=columns, show='headings', height=10)
+        tree.heading('product_name', text='Product Name')
+        tree.heading('quantity', text='Quantity')
+        tree.heading('price', text='Price')
+        tree.heading('customer_name', text='Customer Name')
+
+        for sale in sales:
+            tree.insert('', tk.END, values=(sale['product_name'], sale['quantity'], sale['price'], sale['customer_name']))
+
+        tree.pack(expand=True, fill=tk.BOTH, padx=20, pady=10)
+
+        tk.Button(self.content_frame, text="Download Sales", command=lambda: self.download_data('sales'), bg="#007bff", fg="white", font=("Helvetica", 12)).pack(pady=10)
+
+    def download_data(self, data_type):
+        file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
+        if not file_path:
+            return
+
+        if data_type == 'products':
+            data = pd.DataFrame(products)
+        elif data_type == 'sales':
+            data = pd.DataFrame(sales)
+
+        try:
+            data.to_excel(file_path, index=False)
+            messagebox.showinfo("Success", f"{data_type.capitalize()} data successfully downloaded!")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to download {data_type} data. Error: {str(e)}")
+
+    def clear_content_frame(self):
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+    def create_labeled_entry(self, label_text):
+        label = tk.Label(self.content_frame, text=label_text, bg="#333333", fg="white", font=("Helvetica", 12))
+        label.pack(pady=5)
+        entry = tk.Entry(self.content_frame)
+        entry.pack(pady=5)
+        return entry
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = StockApp(root)
+    root.mainloop()
